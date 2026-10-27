@@ -93,7 +93,8 @@ CLUSTER BY (DATE_TRUNC('MINUTE', ORDER_TS), REGION);
 -- 4. Interactive warehouse — attach ORDERS so its cache stays warm
 --    ADD TABLES is optional for zero-copy queries, but it tells the
 --    warehouse to warm ORDERS proactively instead of on first query.
---    NOTE: interactive warehouses have a 24-hour minimum billing period.
+--    NOTE: interactive warehouses bill a 1-hour minimum per start/resume, then per
+--    second, and only auto-suspend after 24 hours of inactivity.
 --    Drop the warehouse in the Clean Up step as soon as you are done.
 -- -------------------------------------------------------------------------
 CREATE INTERACTIVE WAREHOUSE IF NOT EXISTS INTERACTIVE_ANALYTICS_IWH
@@ -346,7 +347,8 @@ FROM TABLE(GENERATOR(ROWCOUNT => 2000));
 -- =========================================================================
 -- Clean up (run when done to stop incurring costs)
 -- =========================================================================
--- NOTE: Interactive warehouses have a 24-hour minimum billing period.
+-- NOTE: Interactive warehouses bill a 1-hour minimum per start/resume, then per
+-- second, and only auto-suspend after 24 hours of inactivity. Drop when done.
 --       Drop the warehouse as soon as you are finished.
 --
 -- USE ROLE INTERACTIVE_ANALYTICS_ROLE;

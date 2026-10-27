@@ -1,5 +1,7 @@
 # Build a Real-Time BI Dashboard with Interactive Warehouses
 
+[![Developer Guide](https://img.shields.io/badge/Developer-Guide-29B5E8?logo=snowflake&logoColor=white)](https://www.snowflake.com/en/developers/guides/build-real-time-bi-dashboard-interactive-warehouses/)
+
 A complete, self-contained demo that generates live synthetic e-commerce orders inside Snowflake and serves a continuously updating BI dashboard. No Kafka, no external message bus, no infrastructure outside Snowflake.
 
 ![Live Orders Dashboard walkthrough: stopped, running, Flash Sale, and the Region x Category heatmap](assets/demo-screencast.gif)
@@ -140,7 +142,8 @@ Click **Start** in the sidebar. The simulation begins generating orders immediat
 
 ## Cost notes
 
-- **Interactive warehouse** (`INTERACTIVE_ANALYTICS_IWH`) has a **24-hour minimum billing period** once created. Drop it as soon as you are done.
+- **Interactive warehouse** (`INTERACTIVE_ANALYTICS_IWH`) is billed for a **1-hour minimum** each time it starts or resumes, then per second after that. It only auto-suspends after **24 hours of inactivity**, so an idle warehouse keeps running and billing. Drop it as soon as you are done.
+- **Tip:** To keep the warehouse from billing through the weekend, schedule a task to `SUSPEND` it Friday evening and another to `RESUME` it early Monday, ahead of your first users, so the cache is warmed before the first query hits.
 - **Compute pool** (`INTERACTIVE_ANALYTICS_POOL`) auto-suspends after 1 hour of idle time.
 - **Click Stop when you are done.** Every tick refreshes `last_active_at`, so a running simulation keeps running (and keeps the pool busy) even if nobody has the dashboard open. After you click Stop, the service self-suspends once it has been idle for `IDLE_SUSPEND_SECS` (1 hour).
 - **AUTOSTOP task** is a safety net only: it clears `is_running` if the flag is still TRUE but no tick has landed for 1 hour, for example after the service crashed.
